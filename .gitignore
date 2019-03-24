@@ -16,6 +16,8 @@ sysinfo.txt
 ###
 # VS/MD solution and project files
 ###
+# Visual Studio cache directory
+.vs/
 [Ee]xportedObj/
 *.booproj
 *.csproj
