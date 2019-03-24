@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour {
 
 	public float speed = 1f;
@@ -29,11 +30,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		if (Input.GetKey(KeyCode.Space))
 		{
-			Shoot();
+			transform.GetComponent<Rigidbody>().AddForce(transform.up * 6f, ForceMode.Impulse);
 		}
-	}
-
-	void Shoot()
-	{
 	}
 }
