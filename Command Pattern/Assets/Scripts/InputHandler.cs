@@ -1,40 +1,81 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InputHandler : MonoBehaviour {
 
 	public Transform player;
-	private Command kb_W, kb_S, kb_D, kb_A, kb_Space;
+	private Command moveforward, movebackward, moveright, moveleft, jump;
+	private KeyCode forwardkey, backwardkey, leftkey, rightkey, jumpkey;
+	private bool lockMovement = false;
+	public Button MoveForwardButton;
+	public Button MoveBackwardButton;
+	public Button MoveLeftButton;
+	public Button MoveRightButton;
+	public Button JumpButton;
 
 	void Start () {
-		kb_W = new MoveFoward();
-		kb_S = new MoveBackward();
-		kb_D = new MoveRight();
-		kb_A = new MoveLeft();
-		kb_Space = new Jump();
+		moveforward = new MoveFoward();
+		movebackward = new MoveBackward();
+		moveright = new MoveRight();
+		moveleft = new MoveLeft();
+		jump = new Jump();
+		forwardkey = KeyCode.W;
+		backwardkey = KeyCode.S;
+		leftkey = KeyCode.A;
+		rightkey = KeyCode.D;
+		jumpkey = KeyCode.Space;
 	}
 	
 	void Update () {
-		if (Input.GetKey(KeyCode.W))
+		if(Input.GetKeyDown(KeyCode.Escape))
 		{
-			kb_W.Execute(player.transform);
+			if(GameManager.Pause)
+			{
+				GameManager.Pause = false;
+				lockMovement = false;
+				GameManager.PauseMenu.SetActive(false);
+			}else
+			{
+				SetupKeyConfiguration();
+				GameManager.Pause = true;
+				lockMovement = true;
+				GameManager.PauseMenu.SetActive(true);
+			}
 		}
-		if (Input.GetKey(KeyCode.S))
+
+		if(!lockMovement)
 		{
-			kb_S.Execute(player.transform);
+			if (Input.GetKey(KeyCode.W))
+			{
+				moveforward.Execute(player.transform);
+			}
+			if (Input.GetKey(KeyCode.S))
+			{
+				movebackward.Execute(player.transform);
+			}
+			if (Input.GetKey(KeyCode.A))
+			{
+				moveleft.Execute(player.transform);
+			}
+			if (Input.GetKey(KeyCode.D))
+			{
+				moveright.Execute(player.transform);
+			}
+			if (Input.GetKeyDown(jumpkey))
+			{
+				jump.Execute(player.transform);
+			}
 		}
-		if (Input.GetKey(KeyCode.A))
-		{
-			kb_A.Execute(player.transform);
-		}
-		if (Input.GetKey(KeyCode.D))
-		{
-			kb_D.Execute(player.transform);
-		}
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			kb_Space.Execute(player.transform);
-		}
+	}
+
+	private void SetupKeyConfiguration()
+	{
+		MoveForwardButton.GetComponentInChildren<Text>().text = forwardkey.ToString();
+		MoveBackwardButton.GetComponentInChildren<Text>().text = backwardkey.ToString();
+		MoveLeftButton.GetComponentInChildren<Text>().text = leftkey.ToString();
+		MoveRightButton.GetComponentInChildren<Text>().text = rightkey.ToString();
+		JumpButton.GetComponentInChildren<Text>().text = jumpkey.ToString();
 	}
 }
