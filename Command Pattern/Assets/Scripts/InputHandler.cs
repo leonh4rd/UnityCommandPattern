@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InputHandler : MonoBehaviour {
-
+public class InputHandler : MonoBehaviour 
+{
+	private bool waitingChangeKey = false;
 	public Transform player;
 	private Command moveforward, movebackward, moveright, moveleft, jump;
 	private KeyCode forwardkey, backwardkey, leftkey, rightkey, jumpkey;
@@ -29,43 +30,61 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	void Update () {
-		if(Input.GetKeyDown(KeyCode.Escape))
+		if(waitingChangeKey)
 		{
-			if(GameManager.Pause)
+			if(Input.anyKeyDown)
 			{
-				GameManager.Pause = false;
-				lockMovement = false;
-				GameManager.PauseMenu.SetActive(false);
-			}else
-			{
-				SetupKeyConfiguration();
-				GameManager.Pause = true;
-				lockMovement = true;
-				GameManager.PauseMenu.SetActive(true);
+				foreach(KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
+				{
+					if(Input.GetKeyDown(key))
+					{
+						jumpkey = key;
+						waitingChangeKey = false;
+						SetupKeyConfiguration();
+						break;					}
+				}
 			}
 		}
-
-		if(!lockMovement)
+		else
 		{
-			if (Input.GetKey(KeyCode.W))
+			if(Input.GetKeyDown(KeyCode.Escape))
 			{
-				moveforward.Execute(player.transform);
+				if(GameManager.Pause)
+				{
+					GameManager.Pause = false;
+					lockMovement = false;
+					GameManager.PauseMenu.SetActive(false);
+				}else
+				{
+					SetupKeyConfiguration();
+					GameManager.Pause = true;
+					lockMovement = true;
+					GameManager.PauseMenu.SetActive(true);
+				}
 			}
-			if (Input.GetKey(KeyCode.S))
+
+			if(!lockMovement)
 			{
-				movebackward.Execute(player.transform);
-			}
-			if (Input.GetKey(KeyCode.A))
-			{
-				moveleft.Execute(player.transform);
-			}
-			if (Input.GetKey(KeyCode.D))
-			{
-				moveright.Execute(player.transform);
-			}
-			if (Input.GetKeyDown(jumpkey))
-			{
-				jump.Execute(player.transform);
+				if (Input.GetKey(KeyCode.W))
+				{
+					moveforward.Execute(player.transform);
+				}
+				if (Input.GetKey(KeyCode.S))
+				{
+					movebackward.Execute(player.transform);
+				}
+				if (Input.GetKey(KeyCode.A))
+				{
+					moveleft.Execute(player.transform);
+				}
+				if (Input.GetKey(KeyCode.D))
+				{
+					moveright.Execute(player.transform);
+				}
+				if (Input.GetKeyDown(jumpkey))
+				{
+					jump.Execute(player.transform);
+				}
 			}
 		}
 	}
@@ -77,5 +96,11 @@ public class InputHandler : MonoBehaviour {
 		MoveLeftButton.GetComponentInChildren<Text>().text = leftkey.ToString();
 		MoveRightButton.GetComponentInChildren<Text>().text = rightkey.ToString();
 		JumpButton.GetComponentInChildren<Text>().text = jumpkey.ToString();
+	}
+
+	public void JumpButtonChange()
+	{
+		JumpButton.gameObject.GetComponentInChildren<Text>().text = "Press any key";
+		waitingChangeKey = true;
 	}
 }
